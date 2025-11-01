@@ -7,7 +7,7 @@ return {
 			startinsert = false,
 			term = {
 				position = "bot",
-				size = 15,
+				size = 10, -- Changed from 15 to 10 (approximately 10% of screen)
 			},
 			filetype = {
 				java = {
@@ -36,7 +36,7 @@ return {
 			},
 		})
 
-		-- Your keymaps
+		-- Code Runner keymaps
 		vim.keymap.set("n", "<leader>rr", ":RunCode<CR>", {
 			noremap = true,
 			silent = false,
@@ -71,6 +71,67 @@ return {
 			noremap = true,
 			silent = false,
 			desc = "Choose project",
+		})
+
+		-- Gradle keymaps (works in ANY Gradle project)
+		vim.keymap.set("n", "<leader>rg", function()
+			vim.cmd("botright 10split | terminal ./gradlew run")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Gradle run",
+		})
+
+		vim.keymap.set("n", "<leader>rd", function()
+			-- Auto-detect LibGDX or regular Gradle
+			local has_desktop = vim.fn.isdirectory("desktop") == 1
+			local cmd = has_desktop and "./gradlew desktop:run" or "./gradlew run"
+			vim.cmd("botright 10split | terminal " .. cmd)
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Gradle desktop:run",
+		})
+
+		vim.keymap.set("n", "<leader>rb", function()
+			vim.cmd("botright 10split | terminal ./gradlew build")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Gradle build",
+		})
+
+		vim.keymap.set("n", "<leader>rl", function()
+			vim.cmd("botright 10split | terminal ./gradlew clean")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Gradle clean",
+		})
+
+		vim.keymap.set("n", "<leader>rt", function()
+			vim.cmd("botright 10split | terminal ./gradlew test")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Gradle test",
+		})
+
+		-- Maven keymaps (works in ANY Maven project)
+		vim.keymap.set("n", "<leader>rm", function()
+			vim.cmd("botright 10split | terminal mvn compile exec:java")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Maven run",
+		})
+
+		vim.keymap.set("n", "<leader>rM", function()
+			vim.cmd("botright 10split | terminal mvn clean install")
+		end, {
+			noremap = true,
+			silent = false,
+			desc = "Maven clean install",
 		})
 	end,
 }
