@@ -30,6 +30,44 @@ return {
 			require("mini.jump").setup()
 			require("mini.jump2d").setup()
 
+			-- Mini.files setup
+			require("mini.files").setup({
+				mappings = {
+					close = "q",
+					go_in = "l",
+					go_in_plus = "L",
+					go_out = "h",
+					go_out_plus = "H",
+					reset = "<BS>",
+					reveal_cwd = "@",
+					show_help = "g?",
+					synchronize = "=",
+					trim_left = "<",
+					trim_right = ">",
+				},
+				options = {
+					permanent_delete = true,
+					use_as_default_explorer = true,
+				},
+				windows = {
+					preview = false,
+					width_focus = 30,
+					width_nofocus = 15,
+				},
+			})
+
+			-- Toggle mini.files with <leader>e
+			vim.keymap.set("n", "<leader>e", function()
+				if not MiniFiles.close() then
+					MiniFiles.open()
+				end
+			end, { desc = "Toggle file explorer" })
+
+			-- Open mini.files at current file
+			vim.keymap.set("n", "<leader>E", function()
+				MiniFiles.open(vim.api.nvim_buf_get_name(0))
+			end, { desc = "Explorer at current file" })
+
 			-- Mini.clue setup
 			require("mini.clue").setup({
 				triggers = {
@@ -57,6 +95,16 @@ return {
 					require("mini.clue").gen_clues.registers(),
 					require("mini.clue").gen_clues.windows(),
 					require("mini.clue").gen_clues.z(),
+
+					-- Custom clue groups
+					{ mode = "n", keys = "<Leader>c", desc = "+Copilot/Code" },
+					{ mode = "v", keys = "<Leader>c", desc = "+Copilot/Code" },
+					{ mode = "n", keys = "<Leader>r", desc = "+Run" },
+					{ mode = "n", keys = "<Leader>f", desc = "+Find (Telescope)" },
+					{ mode = "v", keys = "<Leader>f", desc = "+Find (Telescope)" },
+					{ mode = "n", keys = "<Leader>n", desc = "+Notifications" },
+					{ mode = "n", keys = "<Leader>e", desc = "Toggle explorer" },
+					{ mode = "n", keys = "<Leader>E", desc = "Explorer at file" },
 				},
 			})
 
@@ -74,6 +122,8 @@ return {
 			-- Mini.keymap setup
 			require("mini.keymap").setup()
 			require("mini.fuzzy").setup()
+
+			-- Mini.notify setup
 			require("mini.notify").setup()
 			-- Keymap to show notification history
 			vim.keymap.set("n", "<leader>nh", function()
