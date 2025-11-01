@@ -47,7 +47,8 @@ return {
 	},
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		    dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },		opts = {
+		dependencies = { "mason-org/mason.nvim", "neovim/nvim-lspconfig" },
+		opts = {
 			ensure_installed = {
 				-- Lua
 				"stylua", -- Lua formatter
@@ -67,6 +68,7 @@ return {
 				"pyright", -- Python LSP (or use "pylsp")
 				"black", -- Python formatter
 				-- or "ruff",       -- Alternative: faster Python formatter
+				"jdtls", -- Java LSP
 			},
 			auto_update = false,
 			run_on_start = true,

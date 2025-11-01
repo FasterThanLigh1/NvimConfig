@@ -1,44 +1,86 @@
--- plugins/telescope.lua
 return {
 	"nvim-telescope/telescope.nvim",
 	tag = "0.1.8",
-	-- or , branch = '0.1.x',
 	dependencies = { "nvim-lua/plenary.nvim" },
-
-	-- ADD YOUR KEYMAPS HERE in the 'keys' table
 	keys = {
-		-- Map <C-p> to find_files
+		-- Find files
 		{
 			"<leader>ff",
 			function()
 				require("telescope.builtin").find_files()
 			end,
-			mode = "n", -- Normal mode
-			desc = "Telescope Find Files",
+			mode = "n",
+			desc = "Find files",
 		},
-		-- Map <C-f> to live_grep (search for words)
+
+		-- Live grep (search all files)
 		{
 			"<leader>fg",
 			function()
 				require("telescope.builtin").live_grep()
 			end,
-			mode = "n", -- Normal mode
-			desc = "Telescope Live Grep (Search Words)",
+			mode = "n",
+			desc = "Find in files (grep)",
 		},
 
-		-- Optional: Add the LazyVim default for files as well, but pointed to the right function
-		-- This ensures you don't lose the LazyVim-standard <Leader>ff keymap, or you can override it.
+		-- Search word under cursor
+		{
+			"<leader>fs",
+			function()
+				require("telescope.builtin").grep_string()
+			end,
+			mode = "n",
+			desc = "Find word under cursor",
+		},
+
+		-- Search word under cursor (visual mode)
+		{
+			"<leader>fs",
+			function()
+				require("telescope.builtin").grep_string()
+			end,
+			mode = "v",
+			desc = "Find selected text",
+		},
+
+		-- Recent files
+		{
+			"<leader>fr",
+			function()
+				require("telescope.builtin").oldfiles()
+			end,
+			mode = "n",
+			desc = "Find recent files",
+		},
+
+		-- Buffers
+		{
+			"<leader>fb",
+			function()
+				require("telescope.builtin").buffers()
+			end,
+			mode = "n",
+			desc = "Find buffers",
+		},
+
+		-- Help tags
+		{
+			"<leader>fh",
+			function()
+				require("telescope.builtin").help_tags()
+			end,
+			mode = "n",
+			desc = "Find help",
+		},
+
+		-- Quick find files (alternative)
 		{
 			"<leader><leader>",
 			function()
 				require("telescope.builtin").find_files()
 			end,
-			desc = "Find Files (Telescope)",
+			mode = "n",
+			desc = "Find files",
 		},
 	},
-
-	-- You can also add your configuration options here
-	-- opts = {
-	--     ...
-	-- },
 }

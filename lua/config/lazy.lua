@@ -35,8 +35,8 @@ require("lazy").setup({
 })
 
 -- Set color scheme
--- vim.cmd("colorscheme dawnfox")
 vim.cmd("colorscheme catppuccin-macchiato")
+-- vim.cmd("colorscheme catppuccin-macchiato")
 
 -- Setup keymaps (after plugins are loaded)
 require("config.keymap")
@@ -75,3 +75,11 @@ vim.keymap.set("n", "<leader>ip", function()
 		print("Not an image file")
 	end
 end, { desc = "Preview image" })
+
+-- Save file with Ctrl+S in normal, insert, and visual modes
+vim.keymap.set("n", "<C-s>", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
+vim.keymap.set("i", "<C-s>", "<Esc>:w<CR>a", { noremap = true, silent = true, desc = "Save file" })
+vim.keymap.set("v", "<C-s>", "<Esc>:w<CR>gv", { noremap = true, silent = true, desc = "Save file" })
+
+-- Show line numbers
+vim.opt.number = true
