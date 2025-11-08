@@ -20,53 +20,13 @@ return {
 				autoopen = true,
 			})
 			require("mini.icons").setup()
-			require("mini.tabline").setup()
 			require("mini.cursorword").setup()
-			require("mini.animate").setup()
 			require("mini.statusline").setup()
 			require("mini.completion").setup()
 			require("mini.hipatterns").setup()
 			require("mini.jump").setup()
 			require("mini.jump2d").setup()
 			require("mini.diff").setup()
-
-			-- Mini.files setup
-			require("mini.files").setup({
-				mappings = {
-					close = "q",
-					go_in = "l",
-					go_in_plus = "L",
-					go_out = "h",
-					go_out_plus = "H",
-					reset = "<BS>",
-					reveal_cwd = "@",
-					show_help = "g?",
-					synchronize = "=",
-					trim_left = "<",
-					trim_right = ">",
-				},
-				options = {
-					permanent_delete = true,
-					use_as_default_explorer = true,
-				},
-				windows = {
-					preview = false,
-					width_focus = 30,
-					width_nofocus = 15,
-				},
-			})
-
-			-- Toggle mini.files with <leader>e
-			vim.keymap.set("n", "<leader>e", function()
-				if not MiniFiles.close() then
-					MiniFiles.open()
-				end
-			end, { desc = "Toggle file explorer" })
-
-			-- Open mini.files at current file
-			vim.keymap.set("n", "<leader>E", function()
-				MiniFiles.open(vim.api.nvim_buf_get_name(0))
-			end, { desc = "Explorer at current file" })
 
 			-- Mini.clue setup
 			require("mini.clue").setup({
@@ -130,11 +90,6 @@ return {
 			vim.keymap.set("n", "<leader>nh", function()
 				require("mini.notify").show_history()
 			end, { desc = "Show notification history" })
-
-			-- ADDED: Mini.tabline keymap
-			vim.keymap.set("n", "<leader>to", function()
-				require("mini.tabline").close_other()
-			end, { desc = "Close other tabs" })
 		end,
 	},
 }
