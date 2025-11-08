@@ -35,8 +35,11 @@ require("lazy").setup({
 })
 
 -- Set color scheme
-vim.cmd("colorscheme catppuccin-macchiato")
 -- vim.cmd("colorscheme catppuccin-macchiato")
+-- vim.cmd("colorscheme nightfox")
+-- vim.cmd("colorscheme gruvbox-material")
+-- vim.cmd("colorscheme tokyonight-storm")
+vim.cmd("colorscheme catppuccin-mocha")
 
 -- Setup keymaps (after plugins are loaded)
 require("config.keymap")

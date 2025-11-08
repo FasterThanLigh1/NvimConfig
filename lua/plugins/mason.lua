@@ -69,6 +69,10 @@ return {
 				"black", -- Python formatter
 				-- or "ruff",       -- Alternative: faster Python formatter
 				"jdtls", -- Java LSP
+				"eslint-lsp", -- For your nvim-lint
+				"flake8", -- For your nvim-lint
+				-- Add the new one
+				"tailwindcss-language-server",
 			},
 			auto_update = false,
 			run_on_start = true,

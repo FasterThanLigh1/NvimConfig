@@ -162,15 +162,6 @@ return {
 		})
 	end,
 	keys = {
-		-- Code actions
-		{
-			"<leader>ca",
-			"<cmd>Lspsaga code_action<CR>",
-			mode = { "n", "v" },
-			desc = "Code actions",
-		},
-
-		-- Hover documentation
 		{
 			"K",
 			"<cmd>Lspsaga hover_doc<CR>",
@@ -235,7 +226,7 @@ return {
 
 		-- Diagnostics (errors/warnings)
 		{
-			"<leader>cd",
+			"<leader>cx",
 			"<cmd>Lspsaga show_line_diagnostics<CR>",
 			desc = "Show line diagnostics",
 		},

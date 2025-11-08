@@ -1,180 +1,128 @@
 return {
-	{ "github/copilot.vim" },
+	-- Plugin 1: The official Copilot backend
+	-- We need this so you can run :Copilot auth
 	{
-		"CopilotC-Nvim/CopilotChat.nvim",
+		"github/copilot.vim",
+	},
+	{
+		"olimorris/codecompanion.nvim",
 		dependencies = {
-			{ "nvim-lua/plenary.nvim", branch = "master" },
+			"nvim-lua/plenary.nvim",
+			"zbirenbaum/copilot.lua",
+			"nvim-treesitter/nvim-treesitter",
+			"MeanderingProgrammer/render-markdown.nvim",
+			"j-hui/fidget.nvim",
 		},
-		build = "make tiktoken",
-		opts = {
-			-- Model configuration - Claude 4.5 Sonnet
-			model = "claude-3.5-sonnet",
-			-- Window configuration
-			window = {
-				layout = "vertical",
-				width = 0.3, -- This might not work with vertical layout
-				relative = "editor",
-				border = "rounded",
-				title = "🤖 AI Assistant",
-			},
-			-- Custom headers
-			headers = {
-				user = "👤 You",
-				assistant = "🤖 Copilot",
-				tool = "🔧 Tool",
-			},
-			-- Separator
-			separator = "━━",
-			-- Auto fold non-assistant messages
-			auto_fold = true,
-			-- Show help actions with telescope
-			show_help = true,
-			-- Auto follow cursor
-			auto_follow_cursor = true,
-			-- Prompts configuration
-			prompts = {
-				Explain = "Explain how this code works.",
-				Review = "Review this code and provide suggestions.",
-				Tests = "Write tests for this code.",
-				Refactor = "Refactor this code to improve its quality.",
-				FixBugs = "Find and fix bugs in this code.",
-				Documentation = "Write documentation for this code.",
-				SwaggerApiDocs = "Write Swagger API documentation for this code.",
-				SwaggerJsDocs = "Write JSDoc annotations for this API.",
-				Summarize = "Summarize this code.",
-				Spelling = "Fix spelling and grammar.",
-				Wording = "Improve wording.",
-				Concise = "Make this code more concise.",
-			},
-		},
-		config = function(_, opts)
-			local chat = require("CopilotChat")
-			chat.setup(opts)
+		config = function()
+			require("plugins.codecompanion.fidget-spinner"):init()
+			require("codecompanion").setup({
+				-- Set window globally for all strategies
 
-			-- Override to open on the right side with custom width
-			vim.api.nvim_create_autocmd("BufEnter", {
-				pattern = "copilot-*",
-				callback = function()
-					vim.cmd("wincmd L") -- Move window to far right
-					-- Set custom width (adjust the number: 40, 50, 60, etc.)
-					vim.cmd("vertical resize 50") -- 50 columns wide
-				end,
+				-- Tell CodeCompanion to use Copilot as its backend
+				strategies = {
+					chat = {
+						adapter = "copilot",
+						opts = {
+							model = "claude-3-sonnet-20240229", -- Use Claude 3 Sonnet for Copilot Chat
+						},
+					},
+					inline = { adapter = "copilot" },
+					agent = { adapter = "copilot" },
+					keymaps = {
+						send = {
+							modes = { n = "<C-s>", i = "<C-s>" }, -- keep if you want the keybinding
+							callback = function(chat)
+								vim.cmd("stopinsert")
+								chat:submit()
+								chat:add_buf_message({ role = "llm", content = "" })
+							end,
+							index = 1,
+							description = "Send",
+						},
+						close = {
+							modes = { n = "<C-c>", i = "<C-c>" },
+							opts = {},
+						},
+						-- Add further custom keymaps here
+					},
+					opts = {
+						---@param message string
+						---@param adapter CodeCompanion.Adapter
+						---@param context table
+						---@return string
+						prompt_decorator = function(message, adapter, context)
+							return string.format([[<prompt>%s</prompt>]], message)
+						end,
+					},
+				},
+				display = {
+					chat = {
+						-- Change the default icons
+						icons = {
+							buffer_pin = " ",
+							buffer_watch = "👀 ",
+						},
+
+						-- Alter the sizing of the debug window
+						debug_window = {
+							---@return number|fun(): number
+							width = vim.o.columns - 5,
+							---@return number|fun(): number
+							height = vim.o.lines - 2,
+						},
+
+						-- Options to customize the UI of the chat buffer
+						window = {
+							layout = "vertical", -- float|vertical|horizontal|buffer
+							position = "right", -- left|right|top|bottom (nil will default depending on vim.opt.splitright|vim.opt.splitbelow)
+							border = "single",
+							height = 0.8,
+							width = 0.45,
+							relative = "editor",
+							full_height = true, -- when set to false, vsplit will be used to open the chat buffer vs. botright/topleft vsplit
+							sticky = false, -- when set to true and `layout` is not `"buffer"`, the chat buffer will remain opened when switching tabs
+							opts = {
+								breakindent = true,
+								cursorcolumn = false,
+								cursorline = false,
+								foldcolumn = "0",
+								linebreak = true,
+								list = false,
+								numberwidth = 1,
+								signcolumn = "no",
+								spell = false,
+								wrap = true,
+							},
+						},
+
+						---Customize how tokens are displayed
+						---@param tokens number
+						---@param adapter CodeCompanion.Adapter
+						---@return string
+						token_count = function(tokens, adapter)
+							return " (" .. tokens .. " tokens)"
+						end,
+					},
+				},
 			})
 		end,
+
+		---
+		-- UPDATED: Keybindings
+		---
 		keys = {
-			-- Open/Toggle/Close
+			-- Toggle the chat panel (now configured to be on the right)
 			{
-				"<leader>cc",
-				":CopilotChatToggle<CR>",
-				mode = { "n", "v" },
-				desc = "Toggle Copilot Chat",
+				"<leader>ac",
+				"<cmd>CodeCompanionChat<CR>",
+				desc = "AI Chat",
 			},
 			{
-				"<leader>co",
-				":CopilotChatOpen<CR>",
-				mode = "n",
-				desc = "Open Copilot Chat",
+				"<leader>aa",
+				"<cmd>CodeCompanionActions<CR>",
+				desc = "AI Actions",
 			},
-			{
-				"<leader>cq",
-				":CopilotChatClose<CR>",
-				mode = "n",
-				desc = "Close Copilot Chat",
-			},
-			-- Chat actions
-			{
-				"<leader>cs",
-				":CopilotChatStop<CR>",
-				mode = "n",
-				desc = "Stop Copilot output",
-			},
-			{
-				"<leader>cr",
-				":CopilotChatReset<CR>",
-				mode = "n",
-				desc = "Reset Copilot Chat",
-			},
-			-- Save/Load
-			{
-				"<leader>cS",
-				":CopilotChatSave<CR>",
-				mode = "n",
-				desc = "Save Copilot Chat",
-			},
-			{
-				"<leader>cL",
-				":CopilotChatLoad<CR>",
-				mode = "n",
-				desc = "Load Copilot Chat",
-			},
-			-- Prompts and Models
-			{
-				"<leader>cp",
-				":CopilotChatPrompts<CR>",
-				mode = "n",
-				desc = "View Copilot prompts",
-			},
-			{
-				"<leader>cm",
-				":CopilotChatModels<CR>",
-				mode = "n",
-				desc = "Select Copilot model",
-			},
-			-- Quick chat with input
-			{
-				"<leader>ci",
-				function()
-					local input = vim.fn.input("Ask Copilot: ")
-					if input ~= "" then
-						vim.cmd("CopilotChat " .. input)
-					end
-				end,
-				mode = "n",
-				desc = "Ask Copilot (input)",
-			},
-			-- Prompt actions (common ones)
-			{
-				"<leader>ce",
-				":CopilotChatExplain<CR>",
-				mode = { "n", "v" },
-				desc = "Explain code",
-			},
-			{
-				"<leader>ct",
-				":CopilotChatTests<CR>",
-				mode = { "n", "v" },
-				desc = "Generate tests",
-			},
-			{
-				"<leader>cR",
-				":CopilotChatReview<CR>",
-				mode = { "n", "v" },
-				desc = "Review code",
-			},
-			{
-				"<leader>cf",
-				":CopilotChatRefactor<CR>",
-				mode = { "n", "v" },
-				desc = "Refactor code",
-			},
-			{
-				"<leader>cb",
-				":CopilotChatFixBugs<CR>",
-				mode = { "n", "v" },
-				desc = "Fix bugs",
-			},
-			{
-				"<leader>cd",
-				":CopilotChatDocumentation<CR>",
-				mode = { "n", "v" },
-				desc = "Generate documentation",
-			},
-			{
-				"<leader>cw",
-				":CopilotChatWording<CR>",
-				mode = { "n", "v" },
-				desc = "Improve wording",
-			},
+			-- The <leader>af keybinding has been removed.
 		},
 	},
 }

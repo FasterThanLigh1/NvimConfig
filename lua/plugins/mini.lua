@@ -1,4 +1,3 @@
--- plugins/mini.lua
 return {
 	{
 		"nvim-mini/mini.nvim",
@@ -29,6 +28,7 @@ return {
 			require("mini.hipatterns").setup()
 			require("mini.jump").setup()
 			require("mini.jump2d").setup()
+			require("mini.diff").setup()
 
 			-- Mini.files setup
 			require("mini.files").setup({
@@ -105,6 +105,7 @@ return {
 					{ mode = "n", keys = "<Leader>n", desc = "+Notifications" },
 					{ mode = "n", keys = "<Leader>e", desc = "Toggle explorer" },
 					{ mode = "n", keys = "<Leader>E", desc = "Explorer at file" },
+					{ mode = "n", keys = "<Leader>t", desc = "+Tabs" }, -- ADDED THIS
 				},
 			})
 
@@ -129,6 +130,11 @@ return {
 			vim.keymap.set("n", "<leader>nh", function()
 				require("mini.notify").show_history()
 			end, { desc = "Show notification history" })
+
+			-- ADDED: Mini.tabline keymap
+			vim.keymap.set("n", "<leader>to", function()
+				require("mini.tabline").close_other()
+			end, { desc = "Close other tabs" })
 		end,
 	},
 }

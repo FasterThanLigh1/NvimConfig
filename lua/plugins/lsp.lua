@@ -12,7 +12,29 @@ return {
 			vim.lsp.config.pyright = {}
 			vim.lsp.config.html = {}
 			vim.lsp.config.angularls = {}
-			vim.lsp.enable({ "vtsls", "lua_ls", "pyright", "html", "angularls" })
+
+			vim.lsp.config.tailwindcss = {
+				-- This is the crucial part.
+				-- By default, this server only activates for a few filetypes.
+				-- We need to tell it to also activate in your Angular
+				-- templates (filetype 'angular') and TypeScript files.
+				filetypes = {
+					"angular",
+					"html",
+					"htmlangular",
+					"typescript",
+					"javascript",
+					"typescriptreact",
+					"javascriptreact",
+					"css",
+					"scss",
+					"less",
+					"svelte",
+					"vue",
+				},
+			}
+
+			vim.lsp.enable({ "vtsls", "lua_ls", "pyright", "angularls" })
 
 			-- Use LspAttach autocommand to only map the following keys
 			-- after the language server attaches to the current buffer
@@ -27,6 +49,7 @@ return {
 					local opts = { buffer = ev.buf }
 
 					-- Example keybindings (add the ones you need):
+					vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts) -- Added keymap for Code Actions
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
