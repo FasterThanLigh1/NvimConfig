@@ -62,6 +62,15 @@ return {
 					vim.keymap.set("n", "<space>f", function()
 						vim.lsp.buf.format({ async = true })
 					end, opts)
+					-- Map <leader>oi to organize imports
+					vim.keymap.set("n", "<leader>oi", function()
+						vim.lsp.buf.code_action({
+							context = {
+								only = { "source.organizeImports" },
+							},
+							apply = true,
+						})
+					end, { desc = "Organize Imports" })
 				end,
 			})
 		end,
