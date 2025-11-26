@@ -4,8 +4,8 @@ return {
 	opts = {
 		rights = {
 			{
-				ft = "CodeCompanion", -- The filetype for the Code Companion chat window
-				title = "Companion",
+				ft = "Sidekick", -- The filetype for the Code Companion chat window
+				title = "Sidekick",
 				-- Set the width for a right panel (e.g., 35% of screen width)
 				size = { width = 0.35 },
 				-- If you need a custom function to open it, you would add it here
