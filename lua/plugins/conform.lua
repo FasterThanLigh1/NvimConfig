@@ -28,10 +28,10 @@ return {
 				json = { "prettier" },
 				python = { "black" }, -- or { "ruff_format" } if using ruff
 			},
-			format_on_save = {
-				timeout_ms = 3000,
-				lsp_fallback = true,
-			},
+			-- format_on_save = {
+			-- 	timeout_ms = 3000,
+			-- 	lsp_fallback = true,
+			-- },
 		},
 	},
 }

@@ -22,7 +22,7 @@ return {
 		-- Configure completion sources
 		sources = {
 			-- Global sources, active in all buffers
-			global = { "lsp", "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer" },
 
 			-- Per-filetype sources
 			per_filetype = {

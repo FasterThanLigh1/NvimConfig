@@ -2,72 +2,154 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			"mason-org/mason.nvim",
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
 		},
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
-			-- Use the new vim.lsp.config API for Neovim 0.11+
-			vim.lsp.config.vtsls = {}
-			vim.lsp.config.lua_ls = {}
-			vim.lsp.config.pyright = {}
-			vim.lsp.config.html = {}
-			vim.lsp.config.angularls = {}
+			local lspconfig = require("lspconfig")
+			local mason_lspconfig = require("mason-lspconfig")
 
-			vim.lsp.config.tailwindcss = {
-				-- This is the crucial part.
-				-- By default, this server only activates for a few filetypes.
-				-- We need to tell it to also activate in your Angular
-				-- templates (filetype 'angular') and TypeScript files.
-				filetypes = {
-					"angular",
-					"html",
-					"htmlangular",
-					"typescript",
-					"javascript",
-					"typescriptreact",
-					"javascriptreact",
-					"css",
-					"scss",
-					"less",
-					"svelte",
-					"vue",
+			-- 1. SETUP MASON
+			require("mason").setup()
+
+			-- 2. DEFINE SERVERS & SETTINGS
+			local servers = {
+				lua_ls = {},
+				pyright = {},
+				html = {},
+				angularls = {},
+				-- VTSLS Configuration
+				vtsls = {
+					filetypes = {
+						"javascript",
+						"javascriptreact",
+						"javascript.jsx",
+						"typescript",
+						"typescriptreact",
+						"typescript.tsx",
+					},
+					settings = {
+						complete_function_calls = true,
+						vtsls = {
+							enableMoveToFileCodeAction = true,
+							autoUseWorkspaceTsdk = true,
+							experimental = {
+								completion = {
+									enableServerSideFuzzyMatch = true,
+								},
+							},
+						},
+						typescript = {
+							updateImportsOnFileMove = { enabled = "always" },
+							suggest = {
+								completeFunctionCalls = true,
+							},
+							inlayHints = {
+								parameterNames = { enabled = "literals" },
+								parameterTypes = { enabled = true },
+								variableTypes = { enabled = false },
+								propertyDeclarationTypes = { enabled = true },
+								functionLikeReturnTypes = { enabled = true },
+								enumMemberValues = { enabled = true },
+							},
+						},
+					},
+				},
+				tailwindcss = {
+					filetypes = {
+						"angular",
+						"html",
+						"htmlangular",
+						"typescript",
+						"javascript",
+						"typescriptreact",
+						"javascriptreact",
+						"css",
+						"scss",
+						"less",
+						"svelte",
+						"vue",
+					},
 				},
 			}
 
-			vim.lsp.enable({ "vtsls", "lua_ls", "pyright", "angularls" })
+			-- 3. AUTO-INSTALL & CONFIGURE SERVERS
+			-- FIX: Handlers are now defined INSIDE setup() to prevent the nil error
+			mason_lspconfig.setup({
+				ensure_installed = vim.tbl_keys(servers),
+				handlers = {
+					function(server_name)
+						local server_config = servers[server_name] or {}
+						lspconfig[server_name].setup(server_config)
+					end,
+				},
+			})
 
-			-- Use LspAttach autocommand to only map the following keys
-			-- after the language server attaches to the current buffer
+			-- 4. KEYMAPS (LspAttach)
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
 					-- Enable completion triggered by <c-x><c-o>
 					vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-					-- Buffer local mappings.
-					-- See `:help vim.lsp.*` for documentation on any of the below functions
 					local opts = { buffer = ev.buf }
 
-					-- Example keybindings (add the ones you need):
-					vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts) -- Added keymap for Code Actions
-					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-					vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
-					vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
+					-- Keybindings
+					vim.keymap.set(
+						{ "n", "v" },
+						"<space>ca",
+						vim.lsp.buf.code_action,
+						vim.tbl_extend("force", opts, { desc = "Code Action" })
+					)
+					vim.keymap.set(
+						"n",
+						"gD",
+						vim.lsp.buf.declaration,
+						vim.tbl_extend("force", opts, { desc = "Go to Declaration" })
+					)
+					vim.keymap.set(
+						"n",
+						"gd",
+						vim.lsp.buf.definition,
+						vim.tbl_extend("force", opts, { desc = "Go to Definition" })
+					)
+					vim.keymap.set(
+						"n",
+						"K",
+						vim.lsp.buf.hover,
+						vim.tbl_extend("force", opts, { desc = "Show Hover Documentation" })
+					)
+					vim.keymap.set(
+						"n",
+						"gi",
+						vim.lsp.buf.implementation,
+						vim.tbl_extend("force", opts, { desc = "Go to Implementation" })
+					)
+					vim.keymap.set(
+						"n",
+						"<space>wa",
+						vim.lsp.buf.add_workspace_folder,
+						vim.tbl_extend("force", opts, { desc = "Add Workspace Folder" })
+					)
+					vim.keymap.set(
+						"n",
+						"<space>wr",
+						vim.lsp.buf.remove_workspace_folder,
+						vim.tbl_extend("force", opts, { desc = "Remove Workspace Folder" })
+					)
 					vim.keymap.set("n", "<space>wl", function()
 						print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-					end, opts)
+					end, vim.tbl_extend("force", opts, { desc = "List Workspace Folders" }))
+
 					vim.keymap.set("n", "<space>f", function()
 						vim.lsp.buf.format({ async = true })
-					end, opts)
-					-- Map <leader>oi to organize imports
+					end, vim.tbl_extend("force", opts, { desc = "Format Buffer" }))
+
+					-- Organize Imports (Specific to vtsls/tsserver logic)
 					vim.keymap.set("n", "<leader>oi", function()
 						vim.lsp.buf.code_action({
-							context = {
-								only = { "source.organizeImports" },
-							},
+							context = { only = { "source.organizeImports" } },
 							apply = true,
 						})
 					end, { desc = "Organize Imports" })
@@ -76,12 +158,11 @@ return {
 		end,
 	},
 	{
-		"mfussenegger/nvim-lint", -- Linting engine
+		"mfussenegger/nvim-lint",
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			local lint = require("lint")
 
-			-- Configure linters per filetype
 			lint.linters_by_ft = {
 				javascript = { "eslint" },
 				typescript = { "eslint" },
@@ -90,7 +171,6 @@ return {
 				python = { "pylint", "flake8" },
 			}
 
-			-- Auto-lint on save and text change
 			vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost", "InsertLeave" }, {
 				callback = function()
 					require("lint").try_lint()

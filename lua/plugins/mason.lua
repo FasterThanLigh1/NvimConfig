@@ -55,10 +55,9 @@ return {
 				"lua-language-server", -- Lua LSP
 
 				-- JavaScript/TypeScript
-				"vtsls", -- TS/JS LSP (faster than typescript-language-server)
 				"prettier", -- JS/TS/HTML formatter
 
-				-- Angular (uses vtsls)
+				-- Angular
 				"angular-language-server", -- Angular LSP
 
 				-- HTML

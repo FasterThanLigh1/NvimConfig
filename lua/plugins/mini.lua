@@ -1,8 +1,9 @@
 return {
 	{
-		"nvim-mini/mini.nvim",
+		"echasnovski/mini.nvim",
 		version = false,
 		config = function()
+			-- Existing setups
 			require("mini.surround").setup({
 				mappings = {
 					add = "gs",
@@ -16,9 +17,7 @@ return {
 			})
 			require("mini.pairs").setup()
 			require("mini.indentscope").setup()
-			require("mini.starter").setup({
-				autoopen = true,
-			})
+			require("mini.starter").setup({ autoopen = true })
 			require("mini.icons").setup()
 			require("mini.cursorword").setup()
 			require("mini.statusline").setup()
@@ -27,8 +26,12 @@ return {
 			require("mini.jump").setup()
 			require("mini.jump2d").setup()
 			require("mini.diff").setup()
+			require("mini.ai").setup()
 
-			-- Mini.clue setup
+			-- Mini Files Setup
+			require("mini.files").setup()
+
+			-- Mini Clue Setup
 			require("mini.clue").setup({
 				triggers = {
 					{ mode = "n", keys = "<Leader>" },
@@ -55,41 +58,58 @@ return {
 					require("mini.clue").gen_clues.registers(),
 					require("mini.clue").gen_clues.windows(),
 					require("mini.clue").gen_clues.z(),
-
-					-- Custom clue groups
 					{ mode = "n", keys = "<Leader>c", desc = "+Copilot/Code" },
 					{ mode = "v", keys = "<Leader>c", desc = "+Copilot/Code" },
 					{ mode = "n", keys = "<Leader>r", desc = "+Run" },
 					{ mode = "n", keys = "<Leader>f", desc = "+Find (Telescope)" },
 					{ mode = "v", keys = "<Leader>f", desc = "+Find (Telescope)" },
 					{ mode = "n", keys = "<Leader>n", desc = "+Notifications" },
-					{ mode = "n", keys = "<Leader>e", desc = "Toggle explorer" },
-					{ mode = "n", keys = "<Leader>E", desc = "Explorer at file" },
-					{ mode = "n", keys = "<Leader>t", desc = "+Tabs" }, -- ADDED THIS
+					-- Descriptions for Mini Files
+					{ mode = "n", keys = "<Leader>e", desc = "Explorer (Root)" },
+					{ mode = "n", keys = "<Leader>E", desc = "Explorer (Current Directory)" },
 				},
 			})
 
-			-- Mini.trailspace setup
 			require("mini.trailspace").setup()
-			-- Keymap to trim trailing whitespace
+
+			-- Trailspace Keymaps
 			vim.keymap.set("n", "<leader>cw", function()
 				require("mini.trailspace").trim()
 			end, { desc = "Trim trailing whitespace" })
-			-- Keymap to trim trailing empty lines
+
 			vim.keymap.set("n", "<leader>cl", function()
 				require("mini.trailspace").trim_last_lines()
 			end, { desc = "Trim trailing empty lines" })
 
-			-- Mini.keymap setup
 			require("mini.keymap").setup()
 			require("mini.fuzzy").setup()
-
-			-- Mini.notify setup
 			require("mini.notify").setup()
-			-- Keymap to show notification history
+
+			-- Notify Keymaps
 			vim.keymap.set("n", "<leader>nh", function()
 				require("mini.notify").show_history()
 			end, { desc = "Show notification history" })
+
+			require("mini.bracketed").setup()
+			require("mini.tabline").setup()
+
+			-- === MINI FILES KEYMAPS ===
+
+			-- Toggle Mini Files (Root directory)
+			vim.keymap.set("n", "<leader>e", function()
+				local MiniFiles = require("mini.files")
+				if not MiniFiles.close() then
+					MiniFiles.open()
+				end
+			end, { desc = "Open mini.files" })
+
+			-- Toggle Mini Files (Current File Directory)
+			vim.keymap.set("n", "<leader>E", function()
+				local MiniFiles = require("mini.files")
+				if not MiniFiles.close() then
+					MiniFiles.open(vim.api.nvim_buf_get_name(0))
+				end
+			end, { desc = "Open mini.files (Current File)" })
 		end,
 	},
 }

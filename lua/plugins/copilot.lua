@@ -16,18 +16,12 @@ return {
 		config = function()
 			require("plugins.codecompanion.fidget-spinner"):init()
 			require("codecompanion").setup({
-				-- Set window globally for all strategies
-
-				-- Tell CodeCompanion to use Copilot as its backend
 				strategies = {
 					chat = {
-						adapter = "copilot",
-						opts = {
-							model = "claude-3-sonnet-20240229", -- Use Claude 3 Sonnet for Copilot Chat
-						},
+						adapter = "gemini_cli",
 					},
-					inline = { adapter = "copilot" },
-					agent = { adapter = "copilot" },
+					inline = { adapter = "gemini_cli" },
+					agent = { adapter = "gemini_cli" },
 					keymaps = {
 						send = {
 							modes = { n = "<C-s>", i = "<C-s>" }, -- keep if you want the keybinding

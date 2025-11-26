@@ -50,14 +50,46 @@ return {
 				end,
 				desc = "Debug: Toggle UI",
 			},
+			{
+				"<leader>de",
+				function()
+					require("dapui").eval()
+				end,
+				desc = "Debug: Evaluate under cursor",
+			},
+			{
+				"<leader>B",
+				function()
+					require("dap").clear_breakpoints()
+				end,
+				desc = "Debug: Clear All Breakpoints",
+			},
 		},
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
 
+			vim.fn.sign_define("DapBreakpoint", {
+				text = "🔴",
+				texthl = "DapBreakpoint",
+				linehl = "",
+				numhl = "",
+			})
+
+			vim.fn.sign_define("DapStopped", {
+				text = "➡️",
+				texthl = "DapStopped",
+				linehl = "DapStoppedLine",
+				numhl = "",
+			})
+
+			-- Optional: Add colors for the icons and line highlight
+			vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = "#3E4452" }) -- Dark bg for current line
+			vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#E06C75" }) -- Red icon
+			vim.api.nvim_set_hl(0, "DapStopped", { fg = "#61AFEF" }) -- Blue arrow
+
 			-- Setup UI
 			dapui.setup()
-			require("nvim-dap-virtual-text").setup()
 
 			-- Auto open/close UI
 			dap.listeners.after.event_initialized["dapui_config"] = function()
@@ -78,48 +110,6 @@ return {
 					vim.fn.stdpath("data") .. "/mason/packages/firefox-debug-adapter/dist/adapter.bundle.js",
 				},
 			}
-
-			-- Angular/TypeScript configurations for Firefox
-			dap.configurations.typescript = {
-				{
-					name = "Debug with Firefox",
-					type = "firefox",
-					request = "launch",
-					reAttach = true,
-					url = "http://localhost:4200", -- Angular default port
-					webRoot = "${workspaceFolder}",
-					firefoxExecutable = "/Applications/Firefox.app/Contents/MacOS/firefox", -- macOS path
-					-- For Linux: '/usr/bin/firefox'
-					-- For custom path, change accordingly
-				},
-				{
-					name = "Debug with Firefox (Custom Port)",
-					type = "firefox",
-					request = "launch",
-					reAttach = true,
-					url = function()
-						return "http://localhost:" .. vim.fn.input("Port: ", "4200")
-					end,
-					webRoot = "${workspaceFolder}",
-					firefoxExecutable = "/Applications/Firefox.app/Contents/MacOS/firefox",
-				},
-			}
-
-			-- Also add for JavaScript files
-			dap.configurations.javascript = dap.configurations.typescript
-
-			-- For Angular component/template files
-			dap.configurations.html = {
-				{
-					name = "Debug with Firefox",
-					type = "firefox",
-					request = "launch",
-					reAttach = true,
-					url = "http://localhost:4200",
-					webRoot = "${workspaceFolder}",
-					firefoxExecutable = "/Applications/Firefox.app/Contents/MacOS/firefox",
-				},
-			}
 		end,
 	},
 
@@ -132,5 +122,19 @@ return {
 			ensure_installed = { "firefox" }, -- Auto-install Firefox debug adapter
 			automatic_installation = true,
 		},
+	},
+	{
+		"theHamsta/nvim-dap-virtual-text",
+		-- It's common practice to load this plugin with nvim-dap
+		dependencies = { "mfussenegger/nvim-dap" },
+
+		-- The config function runs when the plugin is loaded
+		config = function()
+			require("nvim-dap-virtual-text").setup({
+				-- This is the key option you asked for:
+				commented = true,
+				show_stop_reason = true,
+			})
+		end,
 	},
 }
