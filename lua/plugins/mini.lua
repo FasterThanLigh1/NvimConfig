@@ -27,10 +27,6 @@ return {
 			require("mini.jump2d").setup()
 			require("mini.diff").setup()
 			require("mini.ai").setup()
-
-			-- Mini Files Setup
-			require("mini.files").setup()
-
 			-- Mini Clue Setup
 			require("mini.clue").setup({
 				triggers = {
@@ -91,25 +87,6 @@ return {
 			end, { desc = "Show notification history" })
 
 			require("mini.bracketed").setup()
-			require("mini.tabline").setup()
-
-			-- === MINI FILES KEYMAPS ===
-
-			-- Toggle Mini Files (Root directory)
-			vim.keymap.set("n", "<leader>e", function()
-				local MiniFiles = require("mini.files")
-				if not MiniFiles.close() then
-					MiniFiles.open()
-				end
-			end, { desc = "Open mini.files" })
-
-			-- Toggle Mini Files (Current File Directory)
-			vim.keymap.set("n", "<leader>E", function()
-				local MiniFiles = require("mini.files")
-				if not MiniFiles.close() then
-					MiniFiles.open(vim.api.nvim_buf_get_name(0))
-				end
-			end, { desc = "Open mini.files (Current File)" })
 		end,
 	},
 }

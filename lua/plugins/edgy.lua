@@ -2,6 +2,18 @@ return {
 	"folke/edgy.nvim",
 	event = "VeryLazy",
 	opts = {
+		-- NEW: Configuration for the Left side panels
+		lefts = {
+			{
+				ft = "neo-tree", -- The filetype for Neo-tree
+				title = "File Explorer",
+				size = { width = 35 }, -- Set a fixed width (e.g., 35 columns)
+				-- Edgy will automatically manage Neo-tree's open state
+				-- if you use the standard `:Neotree` command.
+			},
+		},
+
+		-- Existing right panels
 		rights = {
 			{
 				ft = "Sidekick", -- The filetype for the Code Companion chat window
@@ -12,6 +24,8 @@ return {
 				-- open = function() require("codecompanion").open_chat() end,
 			},
 		},
+
+		-- Existing bottom panels
 		bottoms = {
 			"Trouble",
 			{ ft = "qf", title = "QuickFix" },
